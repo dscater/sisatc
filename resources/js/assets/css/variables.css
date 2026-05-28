@@ -1,0 +1,26 @@
+:root {
+    --bg1: #00aec3;
+    --bg2: #f07d00;
+    --bg3: #222324;
+    --bg4: #e1f5fe;
+    --bg5: #5b6b79;
+    --bg6: #f3f3f3;
+    --bg2t: rgba(0, 94, 141, 0.822);
+    --bgVerificado: rgb(243, 253, 150);
+    --bgVerificado2: rgb(251, 255, 218);
+    --bgDarkPrincipal: #1d1f21;
+    --bgGrayLight: #e7eaee;
+    --bgDarkGray: rgb(161, 161, 161);
+    --bgDarkGrayP: #555555;
+    --bgSuccess: #179168;
+    --bgSuccess2: #cdf7e9;
+    --bgSuccessH: #ccffe7;
+    --bgDanger: #c00404;
+    --bgDanger2: #b90000;
+    --bgDanger3: #ffebeb;
+    --bgWhite: #fdfdfd;
+    --bgYellow: #f6ea02;
+    --bgYellow2: #fff53f;
+    --bgPrecargado: #f59e0b;
+    --bgNuevo: #22c55e;
+}

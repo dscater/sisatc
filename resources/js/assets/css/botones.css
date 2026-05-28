@@ -1,0 +1,99 @@
+:root {
+    --bg1: #aac13f;
+    --bg2: #67722d;
+    --bg3: #4a5123;
+    --bg4: #84865b;
+    --bg5: #b6b6b6;
+    --bg6: #c59a15;
+    --bg7: #e4ab00;
+    --bg8: #ebd592;
+    --bg2t: #66722dd2;
+    --bg3t: rgba(75, 82, 35, 0.9);
+    --bg6t: #c59915d2;
+    --bgDarkPrincipal: #121409;
+    --bgDark: rgb(22, 21, 21);
+    --bgGray: rgb(126, 126, 126);
+    --bgGrayLight: rgb(241, 241, 241);
+    --bgDarkGray: rgb(31, 31, 31);
+    --bgDarkGrayP: #555555;
+    --bgSuccess: #009143;
+    --bgSuccesst: rgb(3, 121, 58);
+    --bgAzulClaro: #90c1ee;
+    --bgAzulClaroH: rgb(184, 219, 252);
+    --bgDanger: #c00404;
+    --bgDanger2: #b90000;
+    --bgWhite2: #cfcfcf;
+    --bgYellow: yellow;
+}
+
+/* BOTON */
+body .btn.btn-success {
+    color: white;
+    background-color: var(--bgSuccess);
+    border-color: var(--bgSuccess);
+    font-weight: 800;
+}
+
+body .btn.btn-success:hover {
+    background-color: var(--bgSuccesst);
+    color: white;
+}
+
+body .app-wrapper .app-main .app-content .btn {
+    font-size: 0.93em;
+}
+
+.btn-principal {
+    color: white;
+    background-color: var(--bg6);
+    font-weight: 800;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.btn-secundario {
+    color: var(--bg6);
+    background-color: var(--bg3);
+    font-weight: 800;
+}
+
+.btn-outline-principal {
+    color: var(--bg6);
+    border-color: var(--bg6);
+    font-weight: 800;
+}
+.btn-outline-principal:hover {
+    color: var(--bg6t);
+}
+
+.btn-secundario:hover {
+    color: var(--bg6t);
+    background-color: var(--bg3t);
+}
+
+.btn-principal:hover {
+    background-color: var(--bg7);
+    color: white;
+}
+
+.btn-alert-success {
+    background-color: #218838;
+}
+
+.btn-error {
+    background-color: #c82333;
+}
+.page-item .page-link {
+    font-size: 0.9em;
+}
+.page-item.active .page-link {
+    background-color: var(--bg3);
+    border-color: var(--bg3);
+    color: var(--bgWhite);
+}
+
+.content-header h1 {
+    font-weight: bold;
+}

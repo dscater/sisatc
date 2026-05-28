@@ -1,0 +1,64 @@
+@import "./variables.css";
+
+body {
+    /* font-family: "Inter var", "Inter", sans-serif !important;*/
+    font-family: "Inter var", sans-serif;
+    font-feature-settings: "salt";
+}
+
+.text-black {
+    color: black !important;
+}
+
+.text-bg1 {
+    color: var(--bg1) !important;
+}
+
+.font-weight-600 {
+    font-weight: 600;
+}
+
+.text1 {
+    color: var(--bg1);
+}
+
+.text-precargado {
+    color: var(--bgPrecargado);
+}
+
+.text-nuevo {
+    color: var(--bgNuevo);
+}
+
+table.table thead,
+table.table tbody {
+    /* font-size: 0.87em; */
+}
+
+.app-main .text-lg {
+    font-size: 1rem;
+}
+
+.text-md {
+    font-size: 0.9rem;
+}
+
+.text-sm {
+    font-size: 0.82rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-xxs {
+    font-size: 0.65rem;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}

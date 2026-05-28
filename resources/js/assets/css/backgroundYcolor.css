@@ -1,0 +1,92 @@
+@import "./variables.css";
+
+.bg-secundario {
+    background-color: var(--bg7);
+}
+
+.bg-dark-gray {
+    background-color: var(--bgDarkGray);
+}
+
+table .bg-principal,
+.bg-principal {
+    background-color: var(--bg1);
+    color: white;
+}
+
+.bg-item {
+    background-color: var(--bg1) !important;
+}
+
+.bg2 {
+    background-color: var(--bg2) !important;
+}
+
+.bg2t {
+    background-color: var(--bg2t) !important;
+}
+
+.bgVerificado {
+    background-color: var(--bgVerificado) !important;
+}
+
+.bgVerificado2 {
+    background-color: var(--bgVerificado2) !important;
+}
+
+.bgWhite {
+    background-color: var(--bgWhite);
+}
+
+.bgYellow {
+    background-color: var(--bgYellow);
+}
+
+.bgYellow2 {
+    background-color: var(--bgYellow2) !important;
+}
+
+.bgDark {
+    background-color: var(--bgDark);
+}
+
+.btn-alert-success:active,
+.btn-alert-success {
+    background-color: var(--bgSuccess);
+}
+
+.btn-alert-success:hover {
+    background-color: var(--bgSuccessH);
+}
+.bg-header {
+    background-color: var(--bg5);
+}
+
+table .bg-dark-principal,
+.bg-dark-principal {
+    background-color: var(--bgDarkPrincipal);
+    color: white;
+}
+
+.modal-body.bg-principal b,
+.modal-body.bg-principal .fot-weight-bold {
+    color: var(--bg6);
+}
+.modal-body.bg-principal .text-white,
+.modal-body.bg-principal .text-white,
+.text-white {
+    color: white !important;
+}
+
+.page-item.active .page-link {
+    background-color: var(--bg1);
+}
+
+.modal .modal-header button.close {
+    color: white;
+}
+
+/* LOGIN */
+body.app-blank.login {
+    background-color: var(--bgGrayLight);
+}
