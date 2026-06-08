@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\DespachoRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DespachoStoreRequest extends FormRequest
+class ActivoPruebaUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,17 +23,20 @@ class DespachoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "distribuidor_id" => "required",
-            "observacion" => "nullable",
-            "listCategoriaProductoPedidos" => ["required", new DespachoRule()]
+            "activo_id" => "required",
+            "descripcion" => "required",
+            "modulo" => "required",
+            "prueba" => "required",
         ];
     }
 
     public function messages()
     {
         return [
-            "distribuidor_id.requried" => "Debes seleccionar un distribuidor",
-            "listCategoriaProductoPedidos.requried" => "Debes seleccionar un distribuidor",
+            "activo_id.required" => "Debes completar este campo",
+            "descripcion.required" => "Debes completar este campo",
+            "modulo.required" => "Debes completar este campo",
+            "prueba.required" => "Debes completar este campo",
         ];
     }
 }

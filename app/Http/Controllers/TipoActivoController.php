@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CategoriaProductoStoreRequest;
-use App\Http\Requests\CategoriaProductoUpdateRequest;
-use App\Models\CategoriaProducto;
+use App\Http\Requests\TipoActivoStoreRequest;
+use App\Http\Requests\TipoActivoUpdateRequest;
+use App\Models\TipoActivo;
 use App\Models\User;
-use App\Services\CategoriaProductoService;
+use App\Services\TipoActivoService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +21,7 @@ use Inertia\Response as ResponseInertia;
 
 class TipoActivoController extends Controller
 {
-    public function __construct(private CategoriaProductoService $categoria_productoService) {}
+    public function __construct(private TipoActivoService $tipo_activoService) {}
 
     /**
      * Página index
@@ -30,18 +30,18 @@ class TipoActivoController extends Controller
      */
     public function index(): ResponseInertia
     {
-        return Inertia::render("Admin/CategoriaProductos/Index");
+        return Inertia::render("Admin/TipoActivos/Index");
     }
 
     /**
-     * Listado de categoria_productos sin ids: 1 y 2
+     * Listado de tipo_activos sin ids: 1 y 2
      *
      * @return JsonResponse
      */
     public function listado(): JsonResponse
     {
         return response()->JSON([
-            "categoria_productos" => $this->categoria_productoService->listado()
+            "tipo_activos" => $this->tipo_activoService->listado()
         ]);
     }
 
@@ -66,28 +66,28 @@ class TipoActivoController extends Controller
             ];
         }
 
-        $categoria_productos = $this->categoria_productoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $tipo_activos = $this->tipo_activoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
         return response()->JSON([
-            "data" => $categoria_productos->items(),
-            "total" => $categoria_productos->total(),
-            "lastPage" => $categoria_productos->lastPage()
+            "data" => $tipo_activos->items(),
+            "total" => $tipo_activos->total(),
+            "lastPage" => $tipo_activos->lastPage()
         ]);
     }
 
     /**
-     * Registrar un nuevo categoria_producto
+     * Registrar un nuevo tipo_activo
      *
-     * @param CategoriaProductoStoreRequest $request
+     * @param TipoActivoStoreRequest $request
      * @return RedirectResponse|Response
      */
-    public function store(CategoriaProductoStoreRequest $request): RedirectResponse|Response
+    public function store(TipoActivoStoreRequest $request): RedirectResponse|Response
     {
         DB::beginTransaction();
         try {
-            // crear el CategoriaProducto
-            $this->categoria_productoService->crear($request->validated());
+            // crear el TipoActivo
+            $this->tipo_activoService->crear($request->validated());
             DB::commit();
-            return redirect()->route("categoria_productos.index")->with("bien", "Registro realizado");
+            return redirect()->route("tipo_activos.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
             DB::rollBack();
             throw ValidationException::withMessages([
@@ -97,24 +97,24 @@ class TipoActivoController extends Controller
     }
 
     /**
-     * Mostrar un categoria_producto
+     * Mostrar un tipo_activo
      *
-     * @param CategoriaProducto $categoria_producto
+     * @param TipoActivo $tipo_activo
      * @return JsonResponse
      */
-    public function show(CategoriaProducto $categoria_producto): JsonResponse
+    public function show(TipoActivo $tipo_activo): JsonResponse
     {
-        return response()->JSON($categoria_producto);
+        return response()->JSON($tipo_activo);
     }
 
-    public function update(CategoriaProducto $categoria_producto, CategoriaProductoUpdateRequest $request)
+    public function update(TipoActivo $tipo_activo, TipoActivoUpdateRequest $request)
     {
         DB::beginTransaction();
         try {
-            // actualizar categoria_producto
-            $this->categoria_productoService->actualizar($request->validated(), $categoria_producto);
+            // actualizar tipo_activo
+            $this->tipo_activoService->actualizar($request->validated(), $tipo_activo);
             DB::commit();
-            return redirect()->route("categoria_productos.index")->with("bien", "Registro actualizado");
+            return redirect()->route("tipo_activos.index")->with("bien", "Registro actualizado");
         } catch (\Exception $e) {
             DB::rollBack();
             // Log::debug($e->getMessage());
@@ -125,16 +125,16 @@ class TipoActivoController extends Controller
     }
 
     /**
-     * Eliminar categoria_producto
+     * Eliminar tipo_activo
      *
-     * @param CategoriaProducto $categoria_producto
+     * @param TipoActivo $tipo_activo
      * @return JsonResponse|Response
      */
-    public function destroy(CategoriaProducto $categoria_producto): JsonResponse|Response
+    public function destroy(TipoActivo $tipo_activo): JsonResponse|Response
     {
         DB::beginTransaction();
         try {
-            $this->categoria_productoService->eliminar($categoria_producto);
+            $this->tipo_activoService->eliminar($tipo_activo);
             DB::commit();
             return response()->JSON([
                 'sw' => true,

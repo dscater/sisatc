@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ConsolidadoStoreRequest extends FormRequest
+class ActivoPruebaStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,19 +23,20 @@ class ConsolidadoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "distribuidor_id" => "required",
-            "despacho_id" => "required",
-            "observacion" => "nullable",
-            "listCategoriaProductoPedidos" => ["required"]
+            "activo_id" => "required",
+            "descripcion" => "required",
+            "modulo" => "required",
+            "prueba" => "required",
         ];
     }
 
     public function messages()
     {
         return [
-            "distribuidor_id.requried" => "Debes seleccionar un distribuidor",
-            "despacho_id.requried" => "Debes seleccionar un despacho",
-            "listCategoriaProductoPedidos.requried" => "Debes seleccionar un distribuidor",
+            "activo_id.required" => "Debes completar este campo",
+            "descripcion.required" => "Debes completar este campo",
+            "modulo.required" => "Debes completar este campo",
+            "prueba.required" => "Debes completar este campo",
         ];
     }
 }

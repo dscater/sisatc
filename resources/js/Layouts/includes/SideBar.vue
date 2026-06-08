@@ -203,7 +203,7 @@ onUnmounted(() => {});
                         "
                         :label="'Tipos de Activos'"
                         :ruta="'tipo_activos.index'"
-                        :icon="'fa fa-clipboard-list'"
+                        :icon="'fa fa-list'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="

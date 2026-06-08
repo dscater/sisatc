@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TipoActivo extends Model
 {
-    //
+    protected $fillable = [
+        "nombre"
+    ];
 }

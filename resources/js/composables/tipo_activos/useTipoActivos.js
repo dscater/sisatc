@@ -1,7 +1,7 @@
 import { useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 
-export const useCategoriaProductos = () => {
+export const useTipoActivos = () => {
     const initialState = {
         id: 0,
         nombre: "",
@@ -10,14 +10,14 @@ export const useCategoriaProductos = () => {
 
     const form = useForm({ ...initialState });
 
-    const setCategoriaProducto = (item = null, ver = false) => {
+    const setTipoActivo = (item = null, ver = false) => {
         form.clearErrors();
         form.reset();
         Object.assign(form, item);
         form._method = "PUT";
     };
 
-    const limpiarCategoriaProducto = () => {
+    const limpiarTipoActivo = () => {
         form.clearErrors();
         form.reset();
         form.defaults({ ...initialState });
@@ -27,7 +27,7 @@ export const useCategoriaProductos = () => {
 
     return {
         form,
-        setCategoriaProducto,
-        limpiarCategoriaProducto,
+        setTipoActivo,
+        limpiarTipoActivo,
     };
 };

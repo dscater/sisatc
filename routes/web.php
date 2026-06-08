@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivoController;
+use App\Http\Controllers\ActivoPruebaController;
 use App\Http\Controllers\AsignacionZonaController;
 use App\Http\Controllers\CategoriaProductoController;
 use App\Http\Controllers\CiudadController;
@@ -105,6 +106,13 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("activos/paginado", [ActivoController::class, 'paginado'])->name("activos.paginado");
     Route::get("activos/listado", [ActivoController::class, 'listado'])->name("activos.listado");
     Route::resource("activos", ActivoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // ACTIVO PRUEBAS
+    Route::get("activo_pruebas/paginado", [ActivoPruebaController::class, 'paginado'])->name("activo_pruebas.paginado");
+    Route::get("activo_pruebas/listado", [ActivoPruebaController::class, 'listado'])->name("activo_pruebas.listado");
+    Route::resource("activo_pruebas", ActivoPruebaController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 

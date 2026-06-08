@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PedidoDistribucionRequest extends FormRequest
+class TipoActivoStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,14 @@ class PedidoDistribucionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "nombre" => "required",
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            "nombre.required" => "Debes completar este campo"
         ];
     }
 }

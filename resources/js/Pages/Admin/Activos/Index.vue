@@ -2,9 +2,10 @@
 import Content from "@/Components/Content.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import { useCategoriaProductos } from "@/composables/categoria_productos/useCategoriaProductos";
+import { useActivos } from "@/composables/activos/useActivos";
 import { ref, onMounted, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
+import Pruebas from "./Pruebas.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
 const { props: props_page } = usePage();
@@ -15,20 +16,39 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setCategoriaProducto, limpiarCategoriaProducto, form } =
-    useCategoriaProductos();
+const { setActivo, limpiarActivo, form } = useActivos();
 
 const miTable = ref(null);
 const headers = [
     {
-        label: "",
-        key: "id",
+        label: "CÓDIGO",
+        key: "codigo",
         sortable: true,
         width: "3%",
     },
     {
-        label: "NOMBRE",
+        label: "NOMBRE REAL",
         key: "nombre",
+        sortable: true,
+    },
+    {
+        label: "DESCRIPCIÓN",
+        key: "descripcion",
+        sortable: true,
+    },
+    {
+        label: "TIPO DE ACTIVO",
+        key: "tipo_activo.nombre",
+        sortable: true,
+    },
+    {
+        label: "VERSIÓN",
+        key: "version",
+        sortable: true,
+    },
+    {
+        label: "FECHA REGISTRO",
+        key: "fecha_registro_t",
         sortable: true,
     },
     {
@@ -45,21 +65,22 @@ const multiSearch = ref({
 });
 
 const muestra_formulario = ref(false);
+const muestra_pruebas = ref(false);
 
 const agregarRegistro = () => {
-    limpiarCategoriaProducto();
+    limpiarActivo();
     muestra_formulario.value = true;
 };
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
-        limpiarCategoriaProducto();
+        limpiarActivo();
         muestra_formulario.value = false;
     }
 };
 
-const eliminarCategoriaProducto = (item) => {
+const eliminarActivo = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
         html: `<strong>${item.nombre}</strong>`,
@@ -75,7 +96,7 @@ const eliminarCategoriaProducto = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("categoria_productos.destroy", item.id),
+                route("activos.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -89,14 +110,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <Head title="Categoría de Productos"></Head>
+    <Head title="Activos y Configuración"></Head>
 
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h3 class="m-0">
-                        <i class="fa fa-list"></i> Categoría de Productos
+                        <i class="fa fa-list"></i> Activos y Configuración
                     </h3>
                 </div>
                 <!-- /.col -->
@@ -106,7 +127,7 @@ onMounted(async () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Categoría de Productos
+                            Activos y Configuración
                         </li>
                     </ol>
                 </div>
@@ -123,15 +144,15 @@ onMounted(async () => {
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'categoria_productos.create',
+                                    'activos.create',
                                 )
                             "
                             type="button"
                             class="btn btn-primary text-sm"
                             @click="agregarRegistro"
                         >
-                            <i class="fa fa-plus"></i> Nueva Categoría de
-                            Producto
+                            <i class="fa fa-plus"></i> Nuevo Activo y
+                            Configuración
                         </button>
                     </div>
                     <div class="col-md-8 my-1">
@@ -166,7 +187,7 @@ onMounted(async () => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('categoria_productos.paginado')"
+                            :url="route('activos.paginado')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -204,7 +225,33 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'categoria_productos.edit',
+                                            'activo_pruebas.index',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Pruebas"
+                                        placement="left-start"
+                                    >
+                                        <button
+                                            class="btn btn-primary"
+                                            @click="
+                                                setActivo(item);
+                                                muestra_pruebas = true;
+                                            "
+                                        >
+                                            <i
+                                                class="fa fa-clipboard-check"
+                                            ></i></button
+                                    ></el-tooltip>
+                                </template>
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
+                                            'activos.edit',
                                         )
                                     "
                                 >
@@ -217,7 +264,7 @@ onMounted(async () => {
                                         <button
                                             class="btn btn-warning"
                                             @click="
-                                                setCategoriaProducto(item);
+                                                setActivo(item);
                                                 muestra_formulario = true;
                                             "
                                         >
@@ -228,7 +275,7 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'categoria_productos.destroy',
+                                            'activos.destroy',
                                         )
                                     "
                                 >
@@ -240,9 +287,7 @@ onMounted(async () => {
                                     >
                                         <button
                                             class="btn btn-danger"
-                                            @click="
-                                                eliminarCategoriaProducto(item)
-                                            "
+                                            @click="eliminarActivo(item)"
                                         >
                                             <i
                                                 class="fa fa-trash-alt"
@@ -264,4 +309,12 @@ onMounted(async () => {
         @envio-formulario="updateDatatable"
         @cerrar-formulario="muestra_formulario = false"
     ></Formulario>
+
+    <Pruebas
+        v-if="muestra_pruebas"
+        :muestra_formulario="muestra_pruebas"
+        :form="form"
+        @envio-formulario="updateDatatable"
+        @cerrar-formulario="muestra_pruebas = false"
+    ></Pruebas>
 </template>

@@ -52,6 +52,16 @@ class PermisoService
             "activos.update",
             "activos.destroy",
 
+            "activo_pruebas.paginado",
+            "activo_pruebas.index",
+            "activo_pruebas.listado",
+            "activo_pruebas.create",
+            "activo_pruebas.store",
+            "activo_pruebas.edit",
+            "activo_pruebas.show",
+            "activo_pruebas.update",
+            "activo_pruebas.destroy",
+
             "entrenamientos.paginado",
             "entrenamientos.index",
             "entrenamientos.listado",

@@ -18,8 +18,8 @@ const form = props.form;
 
 const tituloDialog = computed(() => {
     return form.id == 0
-        ? `<i class="fa fa-plus"></i> Nueva Categoría de Producto`
-        : `<i class="fa fa-edit"></i> Editar Categoría de Producto`;
+        ? `<i class="fa fa-plus"></i> Nuevo Activo y Configuración`
+        : `<i class="fa fa-edit"></i> Editar Activo y Configuración`;
 });
 
 const textBtn = computed(() => {
@@ -36,8 +36,8 @@ const enviarFormulario = () => {
     enviando.value = true;
     let url =
         form["_method"] == "POST"
-            ? route("categoria_productos.store")
-            : route("categoria_productos.update", form.id);
+            ? route("activos.store")
+            : route("activos.update", form.id);
 
     form.post(url, {
         preserveScroll: true,
@@ -109,7 +109,16 @@ const cerrarFormulario = () => {
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
 };
 
-const cargarListas = () => {};
+const listTipoActivos = ref([]);
+const cargarTipoActivos = () => {
+    axios.get(route("tipo_activos.listado")).then((response) => {
+        listTipoActivos.value = response.data.tipo_activos;
+    });
+};
+
+const cargarListas = () => {
+    cargarTipoActivos();
+};
 
 onMounted(() => {
     cargarListas();
@@ -140,16 +149,27 @@ onMounted(() => {
                     <span class="text-danger">(*)</span> son obligatorios.
                 </p>
                 <div class="row">
-                    <div class="col-md-12 mt-2">
-                        <label class="required"
-                            >Nombre de la Categoría de Producto</label
-                        >
+                    <div class="col-md-4 mt-2">
+                        <label class="required">Código Técnico</label>
                         <input
                             type="text"
                             class="form-control"
-                            :class="{
-                                'parsley-error': form.errors?.nombre,
-                            }"
+                            v-model="form.codigo"
+                        />
+                        <ul
+                            v-if="form.errors?.codigo"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.codigo }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <label class="required">Nombre Real</label>
+                        <input
+                            type="text"
+                            class="form-control"
                             v-model="form.nombre"
                         />
                         <ul
@@ -158,6 +178,61 @@ onMounted(() => {
                         >
                             <li class="parsley-required">
                                 {{ form.errors?.nombre }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <label class="">Descripción</label>
+                        <el-input
+                            type="textarea"
+                            v-model="form.descripcion"
+                            autosize
+                        ></el-input>
+                        <ul
+                            v-if="form.errors?.descripcion"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.descripcion }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <label class="required">Tipo de Activo</label>
+                        <el-select
+                            v-model="form.tipo_activo_id"
+                            placeholder="- Seleccione -"
+                            filterable
+                        >
+                            <el-option
+                                v-for="item in listTipoActivos"
+                                :key="item.id"
+                                :value="item.id"
+                                :label="item.nombre"
+                            ></el-option>
+                        </el-select>
+                        <ul
+                            v-if="form.errors?.tipo_activo_id"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.tipo_activo_id }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <label class="required">Versión</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            v-model="form.version"
+                        />
+                        <ul
+                            v-if="form.errors?.version"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.version }}
                             </li>
                         </ul>
                     </div>
