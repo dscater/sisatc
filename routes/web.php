@@ -120,7 +120,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("entrenamientos/paginado", [EntrenamientoController::class, 'paginado'])->name("entrenamientos.paginado");
     Route::get("entrenamientos/listado", [EntrenamientoController::class, 'listado'])->name("entrenamientos.listado");
     Route::resource("entrenamientos", EntrenamientoController::class)->only(
-        ["index", "store", "edit", "show", "update", "destroy"]
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
 
     // INCIDENCIAS

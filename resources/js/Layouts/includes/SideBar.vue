@@ -153,7 +153,7 @@ onUnmounted(() => {});
                                 'ejecucion_trazabilidads.index',
                             ) ||
                             permisos.includes('incidencias.index') ||
-                            permisos.includes('entrenamientos.index') ||
+                            permisos.includes('entrenamientos.create') ||
                             permisos.includes('activos.index') ||
                             permisos.includes('tipo_activos.index')
                         "
@@ -181,10 +181,10 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('entrenamientos.index')
+                            permisos.includes('entrenamientos.create')
                         "
                         :label="'Motor de Recomendación IA'"
-                        :ruta="'entrenamientos.index'"
+                        :ruta="'entrenamientos.create'"
                         :icon="'fa fa-robot'"
                     ></ItemMenu>
                     <ItemMenu
