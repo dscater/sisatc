@@ -25,6 +25,7 @@ class PermisoService
             "usuarios.segmentacion_zonas_asignadas",
 
             "tipo_usuarios.listado",
+            "tipo_usuarios.listado",
 
             "configuracions.index",
             "configuracions.create",
@@ -41,6 +42,8 @@ class PermisoService
             "tipo_activos.show",
             "tipo_activos.update",
             "tipo_activos.destroy",
+            "tipo_activos.recomendacion",
+            "tipo_activos.usuarios",
 
             "activos.paginado",
             "activos.index",
@@ -71,6 +74,7 @@ class PermisoService
             "entrenamientos.show",
             "entrenamientos.update",
             "entrenamientos.destroy",
+            "entrenamientos.registrarEntrenamiento",
 
             "incidencias.paginado",
             "incidencias.index",
@@ -92,8 +96,14 @@ class PermisoService
             "ejecucion_trazabilidads.update",
             "ejecucion_trazabilidads.destroy",
 
+            "kpi",
+
             "reportes.usuarios",
             "reportes.r_usuarios",
+            "reportes.log_users",
+            "reportes.r_log_users",
+            "reportes.certificacion",
+            "reportes.r_certificacion",
         ],
         "JEFE DE AREA" => [],
         "ANALISTA" => [],

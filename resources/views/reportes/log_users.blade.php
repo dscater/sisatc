@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Log Usuarios</title>
+    <title>LogUsuarios</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
@@ -31,7 +31,7 @@
         }
 
         table thead tr th {
-            font-size: 7pt;
+            font-size: 8pt;
         }
 
         table tbody tr td {
@@ -45,8 +45,8 @@
 
         .logo img {
             position: absolute;
-            height: 90px;
-            top: -20px;
+            height: 70px;
+            top: -30px;
             left: 0px;
         }
 
@@ -54,7 +54,6 @@
             width: 450px;
             margin: auto;
             margin-top: 0PX;
-            margin-bottom: 15px;
             text-align: center;
             font-size: 14pt;
         }
@@ -63,7 +62,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -72,7 +70,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: normal;
             font-size: 0.85em;
         }
@@ -141,23 +138,26 @@
     @inject('configuracion', 'App\Models\Configuracion')
     <div class="encabezado">
         <div class="logo">
-            <img src="{{ $configuracion->first()->logo_b64 }}">
+            <img src="{{ public_path('imgs/' . $configuracion->first()->logo) }}">
         </div>
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
         <h4 class="texto">LOG DE USUARIOS</h4>
-        <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
+        <h4 class="fecha">Expedido: {{ date('d/m/Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="5%">NRO.</th>
-                <th>FECHA Y HORA</th>
+                <th width="6%">N°</th>
                 <th>USUARIO</th>
-                <th>DESCRIPCIÓN</th>
-                <th>MÓDULO</th>
                 <th>ACCIÓN</th>
+                <th>MODULO</th>
+                <th>DESCRIPCIÓN</th>
+                <th>ORIGINAL</th>
+                <th>NUEVO</th>
+                {{-- <th>IP</th> --}}
+                <th width="9%">FECHA</th>
             </tr>
         </thead>
         <tbody>
@@ -167,11 +167,14 @@
             @foreach ($historial_accions as $item)
                 <tr>
                     <td>{{ $cont++ }}</td>
-                    <td>{{ $item->fecha_t }} {{ $item->hora }}</td>
-                    <td>{{ $item->user->full_name }}</td>
-                    <td>{{ $item->descripcion }}</td>
-                    <td>{{ $item->modulo }}</td>
-                    <td>{{ $item->accion }}</td>
+                    <td class="">{{ $item->user->full_name }}</td>
+                    <td class="">{{ $item->accion }}</td>
+                    <td class="">{{ $item->modulo }}</td>
+                    <td class="">{{ $item->descripcion }}</td>
+                    <td>{{ json_encode($item->datos_original, JSON_PRETTY_PRINT) }}</td>
+                    <td>{{ $item->datos_nuevo ? json_encode($item->datos_nuevo, JSON_PRETTY_PRINT) : '' }}</td>
+                    {{-- <td class="">{{ $item->ip }}</td> --}}
+                    <td class="">{{ $item->fecha }} {{ $item->hora }}</td>
                 </tr>
             @endforeach
         </tbody>

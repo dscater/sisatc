@@ -5,44 +5,32 @@ import { Head, usePage, Link } from "@inertiajs/vue3";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 const appStore = useAppStore();
 
+const cargarListas = () => {
+    cargarActivos();
+};
+
 onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const cargarListas = () => {
-    cargarProductos();
-    cargarCategoriaProductos();
-};
 onMounted(() => {
     cargarListas();
     appStore.stopLoading();
 });
 
-const listFormatos = ref([
-    {
-        icon: "fa fa-file-pdf",
-        value: "pdf",
-        label: "PDF",
-    },
-    {
-        icon: "fa fa-file-excel",
-        value: "excel",
-        label: "EXCEL",
-    },
-]);
-
-const getFechaActual = () => {
+const obtenerFechaActual = () => {
     const fecha = new Date();
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Mes empieza desde 0
+    const dia = String(fecha.getDate()).padStart(2, "0"); // Día del mes
     return `${anio}-${mes}-${dia}`;
 };
+
 const form = ref({
-    categoria_producto_id: "todos",
-    producto_id: "todos",
-    fecha_ini: getFechaActual(),
-    fecha_fin: getFechaActual(),
+    activo_id: "todos",
+    estado: "TODOS",
+    fecha_ini: obtenerFechaActual(),
+    fecha_fin: obtenerFechaActual(),
     formato: "pdf",
 });
 
@@ -54,47 +42,46 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listCategoriaProductos = ref([]);
-const listProductos = ref([]);
+const listActivos = ref([]);
+const cargarActivos = () => {
+    axios.get(route("activos.listado")).then((response) => {
+        listActivos.value = response.data.activos;
+        listActivos.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
+const listEstados = ref(["TODOS", "INICIO", "ACEPTADO", "RECHAZADO"]);
+
+const listTipoReporte = ref([
+    {
+        value: "pdf",
+        label: "PDF",
+    },
+    {
+        value: "excel",
+        label: "EXCEL",
+    },
+]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_utilidad_bruta", form.value);
+    const url = route("reportes.r_certificacion", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
     }, 500);
 };
-
-const cargarCategoriaProductos = () => {
-    axios.get(route("categoria_productos.listado")).then((response) => {
-        listCategoriaProductos.value = response.data.categoria_productos;
-
-        listCategoriaProductos.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
-};
-
-const cargarProductos = () => {
-    axios.get(route("productos.listado")).then((response) => {
-        listProductos.value = response.data.productos;
-
-        listProductos.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
-};
 </script>
 <template>
-    <Head title="Reporte Utilidad bruta por Producto"></Head>
+    <Head title="Reporte Certificación"></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4 class="m-0">Utilidad bruta por Producto</h4>
+                    <h4 class="m-0">Reporte Certificación</h4>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -103,7 +90,7 @@ const cargarProductos = () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Utilidad bruta por Producto
+                            Reporte Certificación
                         </li>
                     </ol>
                 </div>
@@ -118,18 +105,15 @@ const cargarProductos = () => {
                         <form @submit.prevent="generarReporte">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label
-                                        >Seleccionar Categoría de
-                                        producto*</label
+                                    <label class="mb-0"
+                                        >Seleccionar Activo*</label
                                     >
                                     <el-select
-                                        v-model="form.categoria_producto_id"
+                                        v-model="form.activo_id"
                                         filterable
-                                        no-data-text="Sin datos"
-                                        no-match-text="Sin resultados"
                                     >
                                         <el-option
-                                            v-for="item in listCategoriaProductos"
+                                            v-for="item in listActivos"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.nombre"
@@ -138,51 +122,43 @@ const cargarProductos = () => {
                                     </el-select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label>Seleccionar producto*</label>
-                                    <el-select
-                                        v-model="form.producto_id"
-                                        filterable
-                                        no-data-text="Sin datos"
-                                        no-match-text="Sin resultados"
+                                    <label class="mb-0">Estado*</label>
+                                    <select
+                                        v-model="form.estado"
+                                        class="form-control"
                                     >
-                                        <el-option
-                                            v-for="item in listProductos"
-                                            :key="item.id"
-                                            :value="item.id"
-                                            :label="item.nombre"
+                                        <option
+                                            v-for="item in listEstados"
+                                            :value="item"
                                         >
-                                        </el-option>
-                                    </el-select>
+                                            {{ item }}
+                                        </option>
+                                    </select>
                                 </div>
                                 <div class="col-md-12 mt-2">
-                                    <label>Rango de Fechas</label>
+                                    <label class="mb-0">Rango de Fechas</label>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input
                                                 type="date"
-                                                v-model="form.fecha_ini"
                                                 class="form-control"
+                                                v-model="form.fecha_ini"
                                             />
                                         </div>
                                         <div class="col-md-6">
                                             <input
                                                 type="date"
-                                                v-model="form.fecha_fin"
                                                 class="form-control"
+                                                v-model="form.fecha_fin"
                                             />
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12 text-center mt-2">
-                                    <el-radio-group v-model="form.formato">
-                                        <el-radio
-                                            v-for="item in listFormatos"
-                                            :value="item.value"
-                                            size="large"
-                                            ><i :class="item.icon"></i>
-                                            {{ item.label }}</el-radio
-                                        >
-                                    </el-radio-group>
+                                    <div
+                                        class="text-muted w-100 text-center text-xs"
+                                    >
+                                        Dejar vacío para listar todos los
+                                        registros
+                                    </div>
                                 </div>
                                 <div class="col-md-12 text-center mt-3">
                                     <button

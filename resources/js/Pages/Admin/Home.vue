@@ -34,12 +34,97 @@ const props_page = defineProps({
 
 const appStore = useAppStore();
 onBeforeMount(() => {
+    cargarActivos();
     appStore.startLoading();
 });
 
 const { props } = usePage();
 
+const listActivos = ref([]);
+const cargarActivos = () => {
+    axios.get(route("activos.listado")).then((response) => {
+        listActivos.value = response.data.activos;
+        listActivos.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
+const listEstados = ref(["TODOS", "INICIO", "ACEPTADO", "RECHAZADO"]);
+const filtros = ref({
+    activo_id: "todos",
+    estado: "TODOS",
+    fecha_inicio: "",
+    fecha_fin: "",
+});
+
+const chartData = ref(null);
+
+const cargarKpi = () => {
+    axios
+        .get(route("kpi"), {
+            params: filtros.value,
+        })
+        .then((response) => {
+            chartData.value = response.data;
+
+            renderGrafico();
+        });
+};
+
+const renderGrafico = () => {
+    Highcharts.chart("grafico-kpi", {
+        chart: {
+            zoomType: "xy",
+        },
+
+        title: {
+            text: "INDICADORES DE DESEMPEÑO DE CERTIFICACIÓN E IA",
+        },
+
+        xAxis: {
+            categories: chartData.value?.categorias,
+        },
+
+        yAxis: [
+            {
+                title: {
+                    text: "Certificaciones",
+                },
+            },
+            {
+                title: {
+                    text: "Efectividad IA (%)",
+                },
+                opposite: true,
+                max: 100,
+            },
+        ],
+
+        tooltip: {
+            shared: true,
+        },
+
+        series: [
+            {
+                type: "column",
+                name: "Certificaciones",
+                data: chartData.value?.certificaciones,
+            },
+            {
+                type: "spline",
+                name: "Efectividad IA (%)",
+                data: chartData.value?.efectividad,
+                yAxis: 1,
+            },
+        ],
+    });
+};
+
 onMounted(() => {
+    renderGrafico();
+
     appStore.stopLoading();
 });
 </script>
@@ -99,40 +184,51 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <select
-                                    v-model="form1.tipo"
-                                    class="form-control text-sm"
-                                    @change="generarReporte1"
-                                >
-                                    <option
-                                        v-for="item in filtroGrafico1"
-                                        :value="item.value"
-                                    >
-                                        {{ item.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <div id="container"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <el-select v-model="filtros.activo_id" filterable>
+                    <el-option
+                        v-for="activo in listActivos"
+                        :key="activo.id"
+                        :value="activo.id"
+                        :label="activo.nombre"
+                    >
+                    </el-option>
+                </el-select>
             </div>
-            <div class="col-md-4 col-sm-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div id="container2"></div>
-                    </div>
-                </div>
+
+            <div class="col-md-2">
+                <select v-model="filtros.estado" class="form-select">
+                    <option v-for="item in listEstados" :value="item">
+                        {{ item }}
+                    </option>
+                </select>
             </div>
-        </div> -->
+
+            <div class="col-md-2">
+                <input
+                    type="date"
+                    v-model="filtros.fecha_inicio"
+                    class="form-control"
+                />
+            </div>
+
+            <div class="col-md-2">
+                <input
+                    type="date"
+                    v-model="filtros.fecha_fin"
+                    class="form-control"
+                />
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary" @click="cargarKpi">
+                    Buscar
+                </button>
+            </div>
+        </div>
+
+        <div id="grafico-kpi"></div>
     </Content>
 </template>
 <style scoped>

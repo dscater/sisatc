@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ejecucion_archivos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("ejecucion_trazabilidad_id");
-            $table->string("archivo");
+            $table->string("archivo")->nullable();
             $table->timestamps();
             $table->foreign("ejecucion_trazabilidad_id")->on("ejecucion_trazabilidads")->references("id");
         });

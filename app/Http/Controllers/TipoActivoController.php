@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TipoActivoStoreRequest;
 use App\Http\Requests\TipoActivoUpdateRequest;
+use App\Models\ActivoPrueba;
+use App\Models\Entrenamiento;
+use App\Models\Incidencia;
 use App\Models\TipoActivo;
 use App\Models\User;
 use App\Services\TipoActivoService;
@@ -43,6 +46,86 @@ class TipoActivoController extends Controller
         return response()->JSON([
             "tipo_activos" => $this->tipo_activoService->listado()
         ]);
+    }
+
+
+    public function recomendacion(Request $request)
+    {
+        $tipo_activo_id = $request->tipo_activo_id;
+
+        $datos = Entrenamiento::select(
+            'modulo',
+            'prueba',
+            'bug'
+        )
+            ->where('tipo_activo_id', $tipo_activo_id)
+            ->where('bug', 'SI')
+
+            ->unionAll(
+
+                Incidencia::select(
+                    'modulo',
+                    'prueba',
+                    'bug'
+                )
+                    ->where('tipo_activo_id', $tipo_activo_id)
+                    ->where('bug', 'SI')
+
+            )
+            ->get();
+
+        $totalBugs = $datos->count();
+
+        if ($totalBugs === 0) {
+            return response()->json([]);
+        }
+
+        $recomendaciones = $datos
+            ->groupBy(function ($item) {
+                return $item->modulo . '|' . $item->prueba;
+            })
+            ->map(function ($items) use ($totalBugs) {
+
+                $primero = $items->first();
+
+                $cantidadBugs = $items->count();
+
+                return [
+                    'modulo' => $primero->modulo,
+                    'prueba' => $primero->prueba,
+                    'bugs_encontrados' => $cantidadBugs,
+                    'porcentaje' => round(
+                        ($cantidadBugs / $totalBugs) * 100,
+                        2
+                    )
+                ];
+            })
+            ->sortByDesc('bugs_encontrados')
+            ->values();
+
+        return response()->json($recomendaciones);
+    }
+    public function usuarios(Request $request)
+    {
+        $tipo_activo_id = $request->tipo_activo_id;
+        $usuarios = Incidencia::with('user')
+            ->where('tipo_activo_id', $tipo_activo_id)
+            ->orderByDesc('fecha')
+            ->orderByDesc('hora')
+            ->get()
+            ->map(function ($incidencia) {
+                return [
+                    'user_id' => $incidencia->user_id,
+                    'usuario' => $incidencia->user?->full_name,
+                    'modulo' => $incidencia->modulo,
+                    'tipo_falla' => $incidencia->tipo_falla,
+                    'severidad' => $incidencia->severidad,
+                    'fecha' => $incidencia->fecha,
+                    'hora' => $incidencia->hora,
+                ];
+            });
+
+        return response()->json($usuarios);
     }
 
     public function paginado(Request $request)

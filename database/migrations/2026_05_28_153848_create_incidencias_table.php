@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('incidencias', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("activo_id");
+            $table->unsignedBigInteger("tipo_activo_id");
             $table->string("modulo");
             $table->string("tipo_falla");
             $table->string("severidad");
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->time("hora");
             $table->timestamps();
 
-            $table->foreign("activo_id")->on("activos")->references("id");
+            $table->foreign("tipo_activo_id")->on("tipo_activos")->references("id");
             $table->foreign("user_id")->on("users")->references("id");
         });
     }

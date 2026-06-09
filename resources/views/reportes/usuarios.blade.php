@@ -45,8 +45,8 @@
 
         .logo img {
             position: absolute;
-            height: 90px;
-            top: -20px;
+            height: 70px;
+            top: -30px;
             left: 0px;
         }
 
@@ -154,10 +154,9 @@
             <tr>
                 <th width="3%">N°</th>
                 <th width="8%">FOTO</th>
-                <th>USUARIO</th>
+                <th>CORREO</th>
                 <th>NOMBRE</th>
                 <th>TIPO</th>
-                <th>BLOQUEO</th>
                 <th>ACCESO</th>
             </tr>
         </thead>
@@ -172,10 +171,9 @@
                         <img src="{{ $user->foto_b64 }}" alt="Foto">
 
                     </td>
-                    <td>{{ $user->usuario }}</td>
-                    <td class="">{{ $user->nombre }}</td>
+                    <td class="">{{ $user->email }}</td>
+                    <td class="">{{ $user->full_name }}</td>
                     <td class="">{{ $user->tipo }}</td>
-                    <td class="centreado">{{ $user->bloqueo == 1 ? 'HABILITADO' : 'DENEGADO' }}</td>
                     <td class="centreado">{{ $user->acceso == 1 ? 'HABILITADO' : 'DENEGADO' }}</td>
                 </tr>
             @endforeach

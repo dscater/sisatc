@@ -31,6 +31,9 @@
         }
     </style>
 
+    <script>
+        const url_assets = "{{ asset('') }}";
+    </script>
     {{-- CSS --}}
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])

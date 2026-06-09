@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activo;
 use App\Models\Certificado;
 use App\Models\CertificadoDetalle;
+use App\Models\EjecucionTrazabilidad;
+use App\Models\Incidencia;
+use App\Models\TipoActivo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,143 +39,93 @@ class InicioController extends Controller
         return Inertia::render("Auth/Login");
     }
 
-    public function certificadosEmitidosLinea(Request $request)
+    public function kpi(Request $request)
     {
-        $tipo =  $request->tipo;
+        $activoId = $request->activo_id;
+        $estado = $request->estado;
+        $fechaInicio = $request->fecha_ini;
+        $fechaFin = $request->fecha_fin;
 
-        $recorrido = [];
+        $queryCertificaciones = EjecucionTrazabilidad::query();
+        $queryIncidencias = Incidencia::query();
 
-        if ($tipo == 'semanal') {
-            $fecha = Carbon::now("America/La_Paz");
+        if ($estado && $estado != 'TODOS') {
+            $queryCertificaciones->where('estado', $estado);
+            $queryIncidencias->where('estado', $estado);
+        }
 
-            for ($i = 6; $i >= 0; $i--) {
-                $recorrido[] = $fecha->copy()->subDays($i)->format("Y-m-d");
+        if ($activoId && $activoId != 'todos') {
+            $queryCertificaciones->where('activo_id', $activoId);
+
+            $activo = Activo::find($activoId);
+
+            if ($activo) {
+                $queryIncidencias->where(
+                    'tipo_activo_id',
+                    $activo->tipo_activo_id
+                );
             }
         }
-        if ($tipo == 'meses') {
-            $fecha = Carbon::now("America/La_Paz");
-            $mes_actual = $fecha->month;
 
-            for ($i = 1; $i <= $mes_actual; $i++) {
-                $recorrido[] = Carbon::create(null, $i, 1)->format("m");
-            }
-        }
-        if ($tipo == 'gestion') {
-            $recorrido = Certificado::selectRaw("YEAR(fecha_registro) as gestion")
-                ->where("status", 1)
-                ->groupBy("gestion")
-                ->orderBy("gestion")
-                ->pluck("gestion")
-                ->toArray();
+        if ($fechaInicio && $fechaFin) {
+            $queryCertificaciones->whereBetween(
+                'fecha',
+                [$fechaInicio, $fechaFin]
+            );
+
+            $queryIncidencias->whereBetween(
+                'fecha',
+                [$fechaInicio, $fechaFin]
+            );
         }
 
-        $data = [];
+        $certificaciones = $queryCertificaciones->get();
+        $incidencias = $queryIncidencias->get();
 
-        $categories = [];
-        $array_meses = [
-            "01" => "Enero",
-            "02" => "Febrero",
-            "03" => "Marzo",
-            "04" => "Abril",
-            "05" => "Mayo",
-            "06" => "Junio",
-            "07" => "Julio",
-            "08" => "Agosto",
-            "09" => "Septiembre",
-            "10" => "Octubre",
-            "11" => "Noviembre",
-            "12" => "Diciembre",
-        ];
-        $total_final = 0;
-        foreach ($recorrido as $item) {
-            if ($tipo == 'semanal') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereDate('fecha_registro', $item);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
+        $tipoActivos = TipoActivo::all();
 
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
-                $total = $total->count();
-                $categories[] = date("d/m/Y", strtotime($item));
-            }
+        $detalle = [];
 
-            if ($tipo == 'meses') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereMonth('fecha_registro', $item);
-                    $q->whereYear('fecha_registro', Carbon::now()->year);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
+        foreach ($tipoActivos as $tipoActivo) {
 
-                $total = $total->count();
-                $categories[] = $array_meses[$item];
-            }
+            $certificacionesActivo = $certificaciones->filter(function ($item) use ($tipoActivo) {
 
-            if ($tipo == 'gestion') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereYear('fecha_registro', $item);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
-                $total = $total->count();
-                $categories[] = $item;
-            }
+                return optional($item->activo)->tipo_activo_id == $tipoActivo->id;
+            });
 
-            $total_final += (float)$total;
-            $data[] = (float)$total;
+            $incidenciasActivo = $incidencias->where(
+                'tipo_activo_id',
+                $tipoActivo->id
+            );
+
+            $totalCertificaciones = $certificacionesActivo->count();
+
+            $totalIncidencias = $incidenciasActivo->count();
+
+            $totalBugs = $incidenciasActivo
+                ->where('bug', 'SI')
+                ->count();
+
+            $efectividad = $totalIncidencias > 0
+                ? round(
+                    ($totalBugs / $totalIncidencias) * 100,
+                    2
+                )
+                : 0;
+
+            $detalle[] = [
+                'tipo_activo_id' => $tipoActivo->id,
+                'activo' => $tipoActivo->nombre,
+                'certificaciones' => $totalCertificaciones,
+                'efectividad' => $efectividad,
+            ];
         }
 
-        return response()->JSON([
-            "categories" => $categories,
-            "data" => $data,
-            "total_final" => $total_final
-        ]);
-    }
-
-    public function cantidadTramitesNormal()
-    {
-        $normales = CertificadoDetalle::whereHas("certificado", function ($q) {
-            $q->where("tipo", "NORMAL");
-            $q->where("status", 1);
-        });
-
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $normales->where("user_id", Auth::user()->id);
-        }
-        $normales = $normales->count();
-
-        $tramites = CertificadoDetalle::whereHas("certificado", function ($q) {
-            $q->where("tipo", "TRAMITE");
-            $q->where("status", 1);
-        });
-
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $tramites->where("user_id", Auth::user()->id);
-        }
-        $tramites = $tramites->count();
-
-        $data = [
-            ["name" => "TRÁMITE", "y" => (float)$tramites],
-            ["name" => "NORMAL", "y" => (float)$normales],
-        ];
-
-        $total_final = (float)$normales + (float)$tramites;
-
-        return response()->JSON([
-            "data" => $data,
-            "total_final" => $total_final
+        return response()->json([
+            'categorias' => collect($detalle)->pluck('activo'),
+            'certificaciones' => collect($detalle)->pluck('certificaciones'),
+            'efectividad' => collect($detalle)->pluck('efectividad'),
+            'detalle' => $detalle
         ]);
     }
 }

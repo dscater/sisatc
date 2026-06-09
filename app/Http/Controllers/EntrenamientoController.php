@@ -80,6 +80,27 @@ class EntrenamientoController extends Controller
         return Inertia::render("Admin/Entrenamientos/Create");
     }
 
+
+    public function registrarEntrenamiento(EntrenamientoStoreRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            // crear el Entrenamiento
+            $this->entrenamientoService->crear($request->validated());
+            DB::commit();
+            return response()->JSON([
+                "sw" => true,
+                "message" => ""
+            ]);
+            // return redirect()->route("entrenamientos.index")->with("bien", "Registro realizado");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
     /**
      * Registrar un nuevo entrenamiento
      *
@@ -93,9 +114,9 @@ class EntrenamientoController extends Controller
             // crear el Entrenamiento
             $this->entrenamientoService->crear($request->validated());
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Registro realizado',
+            return response()->JSON([
+                "sw" => true,
+                "message" => ""
             ]);
             // return redirect()->route("entrenamientos.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {

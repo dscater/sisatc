@@ -23,6 +23,7 @@ use App\Http\Controllers\PresentacionProductoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProvinciaController;
+use App\Http\Controllers\RandomForestController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SegmentacionZonaController;
 use App\Http\Controllers\TipoActivoController;
@@ -39,6 +40,9 @@ Route::get('/', function () {
     }
     return Inertia::render('Auth/Login');
 });
+
+Route::get('/entrenar', [RandomForestController::class, 'entrenar']);
+Route::get('/test_recomendar', [RandomForestController::class, 'test_recomendar']);
 
 Route::get('/login', function () {
     if (Auth::check()) {
@@ -62,8 +66,7 @@ Route::get("sincronizarInicio", [CertificadoEmitidoController::class, 'sincroniz
 Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function () {
     // INICIO
     Route::get('/inicio', [InicioController::class, 'inicio'])->name('inicio');
-    Route::get('/certificadosEmitidosLinea', [InicioController::class, 'certificadosEmitidosLinea'])->name('certificadosEmitidosLinea');
-    Route::get('/cantidadTramitesNormal', [InicioController::class, 'cantidadTramitesNormal'])->name('cantidadTramitesNormal');
+    Route::get('/kpi', [InicioController::class, 'kpi'])->name('kpi');
 
     // CONFIGURACION
     Route::resource("configuracions", ConfiguracionController::class)->only(
@@ -98,6 +101,8 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // TIPO ACTIVOS
     Route::get("tipo_activos/paginado", [TipoActivoController::class, 'paginado'])->name("tipo_activos.paginado");
     Route::get("tipo_activos/listado", [TipoActivoController::class, 'listado'])->name("tipo_activos.listado");
+    Route::get("tipo_activos/recomendacion", [TipoActivoController::class, 'recomendacion'])->name("tipo_activos.recomendacion");
+    Route::get("tipo_activos/usuarios", [TipoActivoController::class, 'usuarios'])->name("tipo_activos.usuarios");
     Route::resource("tipo_activos", TipoActivoController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
@@ -119,6 +124,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // ENTRENAMIENTOS
     Route::get("entrenamientos/paginado", [EntrenamientoController::class, 'paginado'])->name("entrenamientos.paginado");
     Route::get("entrenamientos/listado", [EntrenamientoController::class, 'listado'])->name("entrenamientos.listado");
+    Route::post("entrenamientos/registrarEntrenamiento", [EntrenamientoController::class, 'registrarEntrenamiento'])->name("entrenamientos.registrarEntrenamiento");
     Route::resource("entrenamientos", EntrenamientoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
@@ -140,5 +146,11 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");
     Route::get('reportes/r_usuarios', [ReporteController::class, 'r_usuarios'])->name("reportes.r_usuarios");
+
+    Route::get('reportes/log_users', [ReporteController::class, 'log_users'])->name("reportes.log_users");
+    Route::get('reportes/r_log_users', [ReporteController::class, 'r_log_users'])->name("reportes.r_log_users");
+
+    Route::get('reportes/certificacion', [ReporteController::class, 'certificacion'])->name("reportes.certificacion");
+    Route::get('reportes/r_certificacion', [ReporteController::class, 'r_certificacion'])->name("reportes.r_certificacion");
 });
 require __DIR__ . '/auth.php';

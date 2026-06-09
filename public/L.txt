@@ -1,0 +1,21 @@
+Librearias instalads en Python 3.11
+
+
+	pip3 install scikit-learn pandas  
+
+
+1)
+/entrenar
+
+genera el dataset.json
+
+2)generar el modelo model.pkl
+
+dentro dela ruta scripts\ en la terminal:
+(-3.11 la versión de Python)
+py -3.11 script.py train dataset.json
+
+
+3) Usar modelo en la ruta /test_recomendar
+
+el $payload debe existir en el datset.json

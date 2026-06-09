@@ -2,15 +2,19 @@
 
 namespace App\Services;
 
+use App\Models\Activo;
 use App\Services\HistorialAccionService;
 use App\Models\Entrenamiento;
+use App\Models\TipoActivo;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EntrenamientoService
 {
@@ -85,22 +89,84 @@ class EntrenamientoService
      * @param array $datos
      * @return Entrenamiento
      */
-    public function crear(array $datos): Entrenamiento
+    public function crear(array $datos)
     {
-        $entrenamiento = Entrenamiento::create([
-            "activo_id" => $datos["activo_id"],
-            "descripcion" => mb_strtoupper($datos["descripcion"]),
-            "modulo" => mb_strtoupper($datos["modulo"]),
-            "prueba" => mb_strtoupper($datos["prueba"]),
-            "user_id" => Auth::user()->id,
-            "fecha" => date("Y-m-d"),
-            "hora" => date("H:i:s"),
-        ]);
+        $archivo = $datos['archivo'];
 
-        // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN GUIÓN DE PRUEBA", $entrenamiento);
+        $spreadsheet = IOFactory::load(
+            $archivo->getRealPath()
+        );
 
-        return $entrenamiento;
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $rows = $sheet->toArray();
+
+        $headers = array_map(function ($header) {
+            $header = trim($header);
+            $header = mb_strtolower($header);
+
+            return str_replace(
+                ['á', 'é', 'í', 'ó', 'ú'],
+                ['a', 'e', 'i', 'o', 'u'],
+                $header
+            );
+        }, $rows[0]);
+
+        $columnas = array_flip($headers);
+        Log::debug($columnas);
+        $requeridas = [
+            'tipo de activo',
+            'modulo',
+            'tipo de falla',
+            'severidad',
+            'prueba ejecutada',
+            'resultado',
+            'bug'
+        ];
+
+        foreach ($requeridas as $columna) {
+            if (!isset($columnas[$columna])) {
+                throw new \Exception("La columna '{$columna}' no existe en el archivo.");
+            }
+        }
+
+        foreach (array_slice($rows, 1) as $fila) {
+            Log::debug("ASDASD");
+
+            $tipoActivo = $fila[$columnas['tipo de activo']] ?? null;
+
+            // Buscar el activo en tu catálogo
+            $tipo_activo = TipoActivo::where('nombre', $tipoActivo)->first();
+
+            if (!$tipo_activo) {
+                $tipo_activo = TipoActivo::create(["nombre" => $tipoActivo]);
+            }
+
+            $entrenamiento =  Entrenamiento::create([
+                'tipo_activo'      => $tipoActivo,
+                'tipo_activo_id'   => $tipo_activo?->id,
+                'modulo'     => $fila[$columnas['modulo']] ?? null,
+                'tipo_falla' => $fila[$columnas['tipo de falla']] ?? null,
+                'severidad'  => $fila[$columnas['severidad']] ?? null,
+                'prueba'     => $fila[$columnas['prueba ejecutada']] ?? null,
+                'resultado'  => $fila[$columnas['resultado']] ?? null,
+                'bug'        => $fila[$columnas['bug']] ?? null,
+
+                // Campos del sistema
+                'estado'      => 1,
+                'res'         => 'IMPORTADO',
+                'user_id'     => auth()->id(),
+                'fecha'       => now()->toDateString(),
+                'hora'        => now()->format('H:i:s'),
+            ]);
+
+            // registrar accion
+            sleep(3);
+
+            $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN GUIÓN DE PRUEBA", $entrenamiento);
+        }
+
+        return true;
     }
 
     /**

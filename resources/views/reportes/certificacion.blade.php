@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Movimiento de Inventarios</title>
+    <title>Certificacion</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
@@ -11,9 +11,9 @@
 
         @page {
             margin-top: 1cm;
-            margin-bottom: 0.3cm;
-            margin-left: 1.3cm;
-            margin-right: 0.3cm;
+            margin-bottom: 1cm;
+            margin-left: 1.5cm;
+            margin-right: 1cm;
         }
 
         table {
@@ -31,11 +31,11 @@
         }
 
         table thead tr th {
-            font-size: 9pt;
+            font-size: 8pt;
         }
 
         table tbody tr td {
-            font-size: 8pt;
+            font-size: 7pt;
         }
 
 
@@ -45,8 +45,8 @@
 
         .logo img {
             position: absolute;
-            height: 90px;
-            top: -20px;
+            height: 70px;
+            top: -30px;
             left: 0px;
         }
 
@@ -54,7 +54,6 @@
             width: 450px;
             margin: auto;
             margin-top: 0PX;
-            margin-bottom: 15px;
             text-align: center;
             font-size: 14pt;
         }
@@ -63,7 +62,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -72,7 +70,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: normal;
             font-size: 0.85em;
         }
@@ -141,39 +138,33 @@
     @inject('configuracion', 'App\Models\Configuracion')
     <div class="encabezado">
         <div class="logo">
-            <img src="{{ $configuracion->first()->logo_b64 }}">
+            <img src="{{ public_path('imgs/' . $configuracion->first()->logo) }}">
         </div>
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">MOVIMIENTO DE INVENTARIO</h4>
-        <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
+        <h4 class="texto">CERTIFICACIÓN</h4>
+        <h4 class="fecha">Expedido: {{ date('d/m/Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="3%">N°</th>
-                <th width="10%">FECHA</th>
-                <th>PRODUCTO</th>
-                <th>DETALLE</th>
-                <th>CANTIDAD INGRESO</th>
-                <th>CANTIDAD SALIDA</th>
-                <th>SALDO</th>
+                <th width="6%">N°</th>
+                <th>ACTIVO</th>
+                <th>ESTADO</th>
+                <th width="14%">FECHA</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $cont = 1;
             @endphp
-            @foreach ($movimiento_inventarios as $key => $item)
+            @foreach ($ejecucion_trazabilidads as $item)
                 <tr>
-                    <td class="centreado">{{ $cont++ }}</td>
-                    <td class="">{{ $item->fecha_t }}</td>
-                    <td class="">{{ $item->producto->nombre }}</td>
-                    <td class="">{{ $item->detalle ? $item->detalle : $item->tipo_registro }}</td>
-                    <td class="centreado">{{ $item->cantidad_ingreso ?? '' }}</td>
-                    <td class="centreado">{{ $item->cantidad_salida ?? '' }}</td>
-                    <td class="centreado">{{ $item->cantidad_saldo }}</td>
+                    <td>{{ $cont++ }}</td>
+                    <td class="">{{ $item->activo->codigo }} - {{ $item->activo->nombre }}</td>
+                    <td class="">{{ $item->estado }}</td>
+                    <td class="">{{ $item->fecha }} {{ $item->hora }}</td>
                 </tr>
             @endforeach
         </tbody>

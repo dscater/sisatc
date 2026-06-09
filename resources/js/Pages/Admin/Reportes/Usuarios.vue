@@ -114,7 +114,7 @@ const cargarTipos = () => {
                                         </option>
                                     </select>
                                 </div>
-                                <div class="col-md-12 text-center mt-2">
+                                <!-- <div class="col-md-12 text-center mt-2">
                                     <el-radio-group v-model="form.formato">
                                         <el-radio
                                             v-for="item in listFormatos"
@@ -124,7 +124,7 @@ const cargarTipos = () => {
                                             {{ item.label }}</el-radio
                                         >
                                     </el-radio-group>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12 text-center mt-3">
                                     <button
                                         class="btn btn-primary"

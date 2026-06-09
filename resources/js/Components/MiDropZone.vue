@@ -19,7 +19,7 @@
                         class="btn_quitar"
                         @click.stop="quitarArchivo(index)"
                     >
-                        <i class="mdi mdi-close"></i>
+                        <i class="fa fa-times"></i>
                     </button>
                     <button
                         v-if="item.id != 0"
@@ -27,7 +27,7 @@
                         class="btn_descargar"
                         @click.stop="descargarArchivo(item.url_archivo)"
                     >
-                        <i class="mdi mdi-download"></i>
+                        <i class="fa fa-download"></i>
                     </button>
                     <span
                         class="check"
@@ -37,11 +37,11 @@
                                 : 'text-grey-darken-1',
                         ]"
                         ><i
-                            class="mdi"
+                            class="fa"
                             :class="[
                                 item.id != 0
-                                    ? 'mdi-check-circle'
-                                    : 'mdi-upload-circle',
+                                    ? 'fa-check-circle'
+                                    : 'fa-upload-circle',
                             ]"
                         ></i
                     ></span>
@@ -117,7 +117,7 @@ export default {
                     "addEliminados",
                     this.eliminados,
                     this.nro_etapa,
-                    this.nro_nombre
+                    this.nro_nombre,
                 );
             }
             this.archivos_existentes.splice(index, 1);
@@ -125,7 +125,7 @@ export default {
                 "UpdateFiles",
                 this.archivos_existentes,
                 this.nro_etapa,
-                this.nro_nombre
+                this.nro_nombre,
             );
         },
         descargarArchivo(url) {
@@ -195,7 +195,7 @@ export default {
                         "UpdateFiles",
                         [...this.archivos_existentes],
                         this.nro_etapa,
-                        this.nro_nombre
+                        this.nro_nombre,
                     );
                 };
             } else {
@@ -209,7 +209,7 @@ export default {
                     "UpdateFiles",
                     [...this.archivos_existentes],
                     this.nro_etapa,
-                    this.nro_nombre
+                    this.nro_nombre,
                 );
             }
             reader.readAsDataURL(file);

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Entrenamiento extends Model
 {
     protected $fillable = [
-        "activo",
-        "activo_id",
+        "tipo_activo",
+        "tipo_activo_id",
         "modulo",
         "tipo_falla",
         "severidad",
